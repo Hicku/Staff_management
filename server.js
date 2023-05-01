@@ -6,6 +6,20 @@ const inquirer = require("inquirer");
 const  PORT = process.env.PORT || 3000
 const app = express();
 
+// Middleware
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
+app.use(express.static('public'));
+app.use(function(req, res, next) {
+  console.log('A request was made to the server');
+  next();
+});
+
+app.get('/', function(req, res) {
+    res.send('Hello World!');
+  });
+
+// Database connection
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -27,3 +41,5 @@ app.use((req, res) => {
 app.listen(PORT, () => {
     console.log(`Connected to port ${PORT}`);
 } )
+
+module.exports = app;

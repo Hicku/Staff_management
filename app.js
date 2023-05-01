@@ -1,5 +1,7 @@
+const server = require('./server');
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
+const express = require("express"); 
 
 // Create a connection to the database
 const db = mysql.createConnection({
