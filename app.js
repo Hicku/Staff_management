@@ -203,3 +203,39 @@ function addEmployee() {
         });
     });
 }
+
+function updateEmployeeRole() {
+    // Query the database for the available employees and roles
+    db.query("SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employee", (err, employeeResults) => {
+        if (err) throw err;
+
+        db.query("SELECT id, title FROM roles", (err, roleResults) => {
+            if (err) throw err;
+
+            // Prompt the user for the employee and role to update
+            inquirer.prompt([
+                {
+                    name: "employee",
+                    type: "list",
+                    message: "Which employee's role do you want to update?",
+                    choices: employeeResults.map(employee => ({ value: employee.id, name: employee.name }))
+                },
+                {
+                    name: "role",
+                    type: "list",
+                    message: "What is the employee's new role?",
+                    choices: roleResults.map(role => ({ value: role.id, name: role.title }))
+                }
+            ]).then(answer => {
+                // Update the employee's role in the database
+                db.query("UPDATE employee SET role_id = ? WHERE id = ?", [answer.role, answer.employee], (err, result) => {
+                    if (err) throw err;
+
+                    console.log(`Successfully updated employee's role!`);
+                    // Return to the main menu
+                    mainMenu();
+                });
+            });
+        });
+    });
+}
