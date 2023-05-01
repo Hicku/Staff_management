@@ -13,7 +13,7 @@ const db = mysql.createConnection({
 function start() {
     console.log("Welcome to the Employee Management System!");
 
-    // Prompt user to choose option
+    // Prompt the user to choose an option
     inquirer.prompt({
         name: "action",
         type: "list",
@@ -29,7 +29,7 @@ function start() {
             "Exit"
         ]
     })
-    .then(answer => { // Switch statement to call function based on user option
+    .then(answer => {
         switch(answer.action) {
             case "View all departments":
                 viewDepartments();
@@ -59,3 +59,89 @@ function start() {
     });
 }
 
+// View all departments
+function viewDepartments() {
+    db.query("SELECT * FROM department", (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        start();
+    });
+}
+
+// View all roles
+function viewRoles() {
+    db.query("SELECT roles.id, roles.title, roles.salary, department.dep_name AS department FROM roles JOIN department ON roles.department_id = department.id", (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        start();
+    });
+}
+
+// View all employees
+function viewEmployees() {
+    db.query("SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.dep_name AS department, roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id", (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        start();
+    });
+}
+
+// Add a department
+function addDepartment() {
+    inquirer.prompt({
+        name: "dep_name",
+        type: "input",
+        message: "What is the name of the new department?"
+    })
+    .then(answer => {
+        db.query("INSERT INTO department SET ?", { dep_name: answer.dep_name }, (err, results) => {
+            if (err) throw err;
+            console.log("The new department has been added.");
+            start();
+        });
+    });
+}
+
+// Add a role
+function addRole() {
+    db.query("SELECT * FROM department", (err, results) => {
+        if (err) throw err;
+
+        // Prompt the user to enter the new role details
+        inquirer.prompt([
+            {
+                name: "title",
+                type: "input",
+                message: "What is the name of the new role?"
+            },
+            {
+                name: "salary",
+                type: "input",
+                message: "What is the salary for this role?",
+            },
+            {
+                type: "list",
+                message: "Select the department for the new role:",
+                name: "department_id",
+                choices: results.map((department) => ({
+                    value: department.id,
+                    name: department.dep_name,
+                })),
+            },
+        ]).then((answer) => {
+            db.query(
+                "INSERT INTO roles SET ?",
+                {
+                    title: answer.title,
+                    salary: answer.salary,
+                    department_id: answer.department_id,
+                },
+                (err, results) => {
+                    if (err) throw err;
+                    console.log("The new role has been added.");
+                    start();
+                }
+            );
+        });
+    });
+}
