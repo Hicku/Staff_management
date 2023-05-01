@@ -145,3 +145,61 @@ function addRole() {
         });
     });
 }
+
+function addEmployee() {
+    // Query the database for the available roles and managers
+    db.query("SELECT id, title FROM roles", (err, roleResults) => {
+        if (err) throw err;
+
+        db.query("SELECT id, CONCAT(first_name, ' ', last_name) AS manager FROM employee", (err, employeeResults) => {
+            if (err) throw err;
+
+            // Prompt the user for the new employee's details
+            inquirer.prompt([
+                {
+                    name: "first_name",
+                    type: "input",
+                    message: "What is the employee's first name?",
+                },
+                {
+                    name: "last_name",
+                    type: "input",
+                    message: "What is the employee's last name?",
+                },
+                {
+                    name: "role_id",
+                    type: "list",
+                    message: "What is the employee's role?",
+                    choices: roleResults.map((role) => ({
+                        value: role.id,
+                        name: role.title,
+                    })),
+                },
+                {
+                    name: "manager_id",
+                    type: "list",
+                    message: "Who is the employee's manager?",
+                    choices: employeeResults.map((employee) => ({
+                        value: employee.id,
+                        name: employee.manager || "(no manager)",
+                    })),
+                },
+            ]).then((answer) => {
+                db.query(
+                    "INSERT INTO employee SET ?",
+                    {
+                        first_name: answer.first_name,
+                        last_name: answer.last_name,
+                        role_id: answer.role_id,
+                        manager_id: answer.manager_id || null,
+                    },
+                    (err, results) => {
+                        if (err) throw err;
+                        console.log("The new employee has been added.");
+                        start();
+                    }
+                );
+            });
+        });
+    });
+}
