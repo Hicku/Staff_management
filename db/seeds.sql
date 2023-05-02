@@ -1,28 +1,29 @@
-INSERT INTO employees (id, first_name, last_name) (1,"Ben", "Growcott");
-INSERT INTO employees (id, first_name, last_name) (2,"Jak", "Bastable");
-INSERT INTO employees (id, first_name, last_name) (3,"Larry", "David");
-INSERT INTO employees (id, first_name, last_name) (4,"Jerry", "Seinfeld");
-INSERT INTO employees (id, first_name, last_name) (5,"Charlie", "Kelly");
-INSERT INTO employees (id, first_name, last_name) (6,"Dennis", "Reynolds");
-INSERT INTO employees (id, first_name, last_name) (7,"Kate", "Blanchett");
-INSERT INTO employees (id, first_name, last_name) (8,"Juliet", "Lewis");
-INSERT INTO employees (id, first_name, last_name) (9,"Amanda", "Haas");
-INSERT INTO employees (id, first_name, last_name) (10,"Dee", "Reynolds");
-INSERT INTO employees (id, first_name, last_name) (11,"Aaron", "Hickman");
 
-INSERT INTO roles (id, title, salary) (1, "General Manager", "£30,000");
-INSERT INTO roles (id, title, salary) (2, "Assistent Manager", "£24,000");
-INSERT INTO roles (id, title, salary) (3, "Supervisor", "£20,000");
-INSERT INTO roles (id, title, salary) (4, "Barista", "£18,000");
-INSERT INTO roles (id, title, salary) (5, "Chef", "£22,000");
-INSERT INTO roles (id, title, salary) (6, "Bar Staff", "£18,000");
+INSERT INTO department (dep_name) VALUES ("Management");
+INSERT INTO department (dep_name) VALUES ("Coffee");
+INSERT INTO department (dep_name) VALUES ("Kitchen");
+INSERT INTO department (dep_name) VALUES ("Bar");
 
 
+INSERT INTO roles (department_id, title, salary) VALUES (1, "General Manager", "30000.00");
+INSERT INTO roles (department_id, title, salary) VALUES (1, "Assistent Manager", "24000.00");
+INSERT INTO roles (department_id, title, salary) VALUES (1, "Supervisor", "20000.00");
+INSERT INTO roles (department_id, title, salary) VALUES (2, "Barista", "18000.00");
+INSERT INTO roles (department_id, title, salary) VALUES (3, "Chef", "22000.00");
+INSERT INTO roles (department_id, title, salary) VALUES (4, "Bar Staff", "18000.00");
 
 
-INSERT INTO department (id, dep_name) (1, "Management");
-INSERT INTO department (id, dep_name) (2, "Coffee")
-INSERT INTO department (id, dep_name) (3, "Kitchen")
-INSERT INTO department (id, dep_name) (4, "Bar")
+INSERT INTO employees (role_id, first_name, last_name) VALUES (1, "Ben", "Growcott");
+INSERT INTO employees (role_id, manager_id, first_name, last_name) VALUES (2, 1, "Jak", "Bastable");
+INSERT INTO employees (role_id, manager_id, first_name, last_name) VALUES (2, 1, "Larry", "David");
+INSERT INTO employees (role_id, manager_id, first_name, last_name) VALUES (3, 2, "Jerry", "Seinfeld");
+INSERT INTO employees (role_id, manager_id, first_name, last_name) VALUES (3, 2, "Charlie", "Kelly");
+INSERT INTO employees (role_id, manager_id, first_name, last_name) VALUES (3, 3, "Dennis", "Reynolds");
+INSERT INTO employees (role_id, manager_id, first_name, last_name) VALUES (4, 3, "Kate", "Blanchett");
+INSERT INTO employees (role_id, manager_id, first_name, last_name) VALUES (4, 3, "Julia", "Dreyfus");
+INSERT INTO employees (role_id, manager_id, first_name, last_name) VALUES (5, 1, "Amanda", "Haas");
+INSERT INTO employees (role_id, manager_id, first_name, last_name) VALUES (5, 1, "Dee", "Reynolds");
+INSERT INTO employees (role_id, manager_id, first_name, last_name) VALUES (6, 3, "Aaron", "Hickman");
+
 
 

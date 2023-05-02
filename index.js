@@ -1,18 +1,38 @@
-const server = require('./server');
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const express = require("express"); 
 
-// Create a connection to the database
+const PORT = process.env.PORT || 3000
+const app = express();
+
+// Middleware
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
+app.use(express.static('public'));
+app.use(function(req, res, next) {
+  console.log('A request was made to the server');
+  next();
+});
+
+// Database connection
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "Bounty_county23",
     database: "employees_db"
-});
+})
+
+db.connect(function(err) {
+    if (err) throw err;
+    console.log('Connected to the database.');
+  });
+
+
+
 
 // Start the application
 function start() {
+    
     console.log("Welcome to the Employee Management System!");
 
     // Prompt the user to choose an option
@@ -81,7 +101,7 @@ function viewRoles() {
 
 // View all employees
 function viewEmployees() {
-    db.query("SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.dep_name AS department, roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id", (err, results) => {
+    db.query("SELECT employees.id, employees.first_name, employees.last_name, roles.title, department.dep_name AS department, roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id LEFT JOIN employees manager ON employees.manager_id = manager.id", (err, results) => {
         if (err) throw err;
         console.table(results);
         start();
@@ -153,7 +173,7 @@ function addEmployee() {
     db.query("SELECT id, title FROM roles", (err, roleResults) => {
         if (err) throw err;
 
-        db.query("SELECT id, CONCAT(first_name, ' ', last_name) AS manager FROM employee", (err, employeeResults) => {
+        db.query("SELECT id, CONCAT(first_name, ' ', last_name) AS manager FROM employees", (err, employeeResults) => {
             if (err) throw err;
 
             // Prompt the user for the new employee's details
@@ -181,14 +201,14 @@ function addEmployee() {
                     name: "manager_id",
                     type: "list",
                     message: "Who is the employee's manager?",
-                    choices: employeeResults.map((employee) => ({
-                        value: employee.id,
-                        name: employee.manager || "(no manager)",
+                    choices: employeeResults.map((employees) => ({
+                        value: employees.id,
+                        name: employees.manager || "(no manager)",
                     })),
                 },
             ]).then((answer) => {
                 db.query(
-                    "INSERT INTO employee SET ?",
+                    "INSERT INTO employees SET ?",
                     {
                         first_name: answer.first_name,
                         last_name: answer.last_name,
@@ -197,7 +217,7 @@ function addEmployee() {
                     },
                     (err, results) => {
                         if (err) throw err;
-                        console.log("The new employee has been added.");
+                        console.log("The new employees has been added.");
                         start();
                     }
                 );
@@ -208,7 +228,7 @@ function addEmployee() {
 
 function updateEmployeeRole() {
     // Query the database for the available employees and roles
-    db.query("SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employee", (err, employeeResults) => {
+    db.query("SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employees", (err, employeeResults) => {
         if (err) throw err;
 
         db.query("SELECT id, title FROM roles", (err, roleResults) => {
@@ -220,7 +240,7 @@ function updateEmployeeRole() {
                     name: "employee",
                     type: "list",
                     message: "Which employee's role do you want to update?",
-                    choices: employeeResults.map(employee => ({ value: employee.id, name: employee.name }))
+                    choices: employeeResults.map(employees => ({ value: employees.id, name: employees.name }))
                 },
                 {
                     name: "role",
@@ -230,14 +250,24 @@ function updateEmployeeRole() {
                 }
             ]).then(answer => {
                 // Update the employee's role in the database
-                db.query("UPDATE employee SET role_id = ? WHERE id = ?", [answer.role, answer.employee], (err, result) => {
+                db.query("UPDATE employees SET role_id = ? WHERE id = ?", [answer.role, answer.employeesmysql ], (err, result) => {
                     if (err) throw err;
 
                     console.log(`Successfully updated employee's role!`);
                     // Return to the main menu
-                    mainMenu();
+                    start();
                 });
             });
         });
     });
 }
+
+start();
+
+app.use((req, res) => {
+    res.status(404).end();
+});
+
+app.listen(PORT, () => {
+    console.log(`Connected to port ${PORT}`);
+} )
