@@ -176,6 +176,9 @@ function addEmployee() {
         db.query("SELECT id, CONCAT(first_name, ' ', last_name) AS manager FROM employees", (err, employeeResults) => {
             if (err) throw err;
 
+            // Add a "None" option to the list of managers
+            employeeResults.unshift({ id: null, manager: "None" });
+
             // Prompt the user for the new employee's details
             inquirer.prompt([
                 {
@@ -201,9 +204,9 @@ function addEmployee() {
                     name: "manager_id",
                     type: "list",
                     message: "Who is the employee's manager?",
-                    choices: employeeResults.map((employees) => ({
-                        value: employees.id,
-                        name: employees.manager || "(no manager)",
+                    choices: employeeResults.map((employee) => ({
+                        value: employee.id,
+                        name: employee.manager,
                     })),
                 },
             ]).then((answer) => {
@@ -213,11 +216,11 @@ function addEmployee() {
                         first_name: answer.first_name,
                         last_name: answer.last_name,
                         role_id: answer.role_id,
-                        manager_id: answer.manager_id || null,
+                        manager_id: answer.manager_id,
                     },
                     (err, results) => {
                         if (err) throw err;
-                        console.log("The new employees has been added.");
+                        console.log("The new employee has been added.");
                         start();
                     }
                 );
