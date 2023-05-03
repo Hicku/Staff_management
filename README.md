@@ -40,3 +40,6 @@ If you have any questions, please feel free to contact me:
 
 GitHub: hicku72
 Email: aaron.hickman201@gmail.com
+
+https://github.com/Hicku/Staff_management
+https://drive.google.com/file/d/1tZuYkmPw8f0P4GoOFngR5X7DU_GT-q48/view?usp=share_link
