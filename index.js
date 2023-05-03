@@ -253,13 +253,13 @@ function updateEmployeeRole() {
                 }
             ]).then(answer => {
                 // Update the employee's role in the database
-                db.query("UPDATE employees SET role_id = ? WHERE id = ?", [answer.role, answer.employeesmysql ], (err, result) => {
-                    if (err) throw err;
-
-                    console.log(`Successfully updated employee's role!`);
-                    // Return to the main menu
-                    start();
-                });
+                db.query(
+                    "UPDATE employees SET role_id = ? WHERE id = ?",[answer.role, answer.employee], (err, results) => {
+                        if (err) throw err;
+                        console.log("The employee's role has been updated.");
+                        start();
+                    }
+                );
             });
         });
     });
